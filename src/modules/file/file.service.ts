@@ -69,21 +69,25 @@ export class FileService {
     fileExtension: string,
     sizeName: string,
   ): Promise<string> {
-    if (width > toWidth) {
-      const fileName = `${fileKey}_${sizeName}.${fileExtension}`;
-      const currentFilePath = path.resolve(profileImagePath, fileName);
+    try {
+      if (width > toWidth) {
+        const fileName = `${fileKey}_${sizeName}.${fileExtension}`;
+        const currentFilePath = path.resolve(profileImagePath, fileName);
 
-      await sharp(originalFilePath)
-        .resize({
-          width: toWidth,
-          height: Math.round((height / width) * toWidth),
-        })
-        .toFile(currentFilePath);
+        await sharp(originalFilePath)
+          .resize({
+            width: toWidth,
+            height: Math.round((height / width) * toWidth),
+          })
+          .toFile(currentFilePath);
 
-      return fileName;
+        return fileName;
+      }
+
+      return originalFileName;
+    } catch (error) {
+      throw new InternalServerErrorException();
     }
-
-    return originalFileName;
   }
 
   async removeFiles(fileNames: string[]): Promise<void> {
